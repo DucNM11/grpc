@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Matrix operations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <style>
+        .error {
+            color: red
+        }
+        .info {
+            color: green
+        }
+        .warning {
+            color: yellow
+        }
+    </style>
+
+</head>
+
+<body>
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                    <h3 class="title">Matrix operations</h3>
+
+                    <div class="box has-text-left">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <ul class=flashes>
+                            {% for category, message in messages %}
+                              <li class="{{ category }}">{{ message }}</li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% endwith %}
+                        <form method="post" enctype="multipart/form-data">
+                            <label for="operation">Choose an operation:</label>
+
+                            <select id="operation" name="operation">
+                              <option value="add">Addition</option>
+                              <option value="mul">Multiplication</option>
+                            </select>
+
+                            <div class="field">
+                                <label class="label">Deadline (Seconds)</label>
+                                <div class="control">
+                                  <input class="input" name="deadline" placeholder="Default: 30">
+                                </div>
+                            </div>
+
+                            <label class="label">Upload two matrix files in txt format</label>
+                            <input type="file" name="matrices[]" multiple>
+                            <input type="submit" value="Submit">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+
+</html>
