@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 
+# Only import required modules/functions to optimize computing resources
 from flask import Flask, flash, render_template, request, jsonify, redirect, url_for
 from numpy import array, append
+from time import perf_counter
+import asyncio
 
+from grpc_srv import client
+
+# Initiate flask app
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 
 def check_size(matrix):
-
+    """Function to check the matrix size (n x n) n is power of 2"""
     is_2n = lambda x: False if x == 0 else x & (x - 1) == 0
 
     matrix_shape = matrix.shape
@@ -21,6 +27,7 @@ def check_size(matrix):
 
 
 def parse_file(file):
+    """Parse file to numpy 2d array"""
     parsed_string = file.read().decode('utf-8')
     if parsed_string[-1] == '\n':
         parsed_string = parsed_string[:-1]
@@ -30,6 +37,7 @@ def parse_file(file):
         for row in parsed_string.split('\n')
     ])
 
+    # 2d array being passed around is always in numpy array format, since numpy data storage size for list is more optimal than python list
     return matrix
 
 
@@ -40,7 +48,10 @@ def index_page():
 
 @app.route('/', methods=['POST'])
 def get_matrix():
+    # Get data from html form
     files = request.files.getlist('matrices[]')
+    deadline = request.form.get("deadline", 30, int)
+    operation = request.form.get("operation")
 
     if len(files) != 2:
         flash('Upload exactly two text files for the operation', 'error')
@@ -48,8 +59,6 @@ def get_matrix():
 
     matrix_1 = parse_file(files[0])
     matrix_2 = parse_file(files[1])
-    deadline = request.form.get("deadline", 30, int)
-    operation = request.form.get("operation")
 
     err = 0
     if not check_size(matrix_1):
@@ -67,11 +76,21 @@ def get_matrix():
         flash(f'Invalid matrix. Please check {msg}', 'error')
         return redirect(url_for('index_page'))
 
-    return jsonify(success=err,
-                   matrix_1=matrix_1.tolist(),
-                   matrix_2=matrix_2.tolist(),
+    time = perf_counter()
+
+    if operation == 'add':
+        rs = asyncio.run(client.as_add(matrix_1, matrix_2))
+    else:
+        rs = asyncio.run(client.as_lb_mul(matrix_1, matrix_2, deadline))
+
+    total_time = perf_counter() - time
+    print(f'Operation takes {total_time} seconds')
+
+    return jsonify(success=err == 0,
+                   operation=operation,
                    deadline=deadline,
-                   operation=operation)
+                   runtime=total_time,
+                   result=rs.tolist())
 
 
 if __name__ == '__main__':
