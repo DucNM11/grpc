@@ -1,5 +1,4 @@
 # Flexible distributed matrix multiplication
-## Minh Duc Nguyen - Apr 2022
 
 ### Project specs:
 - A cloud-based web application using Flask connected to a distributed system with Client-Side Load-Balancing
