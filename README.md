@@ -9,4 +9,4 @@
 - Matrix multiplication algorithm: Dynamic recursion layers for optimal packet size communication to improve multiplication performance
 - Infrastructure:
     - Horizontal scaling: Create a cluster within a GCP zone for better bandwidth
-    - Vertical scaling: Host all cluster's nodes on each CPU in a high performance compute engine with high CPUs number to eliminate the network overhead cost
+    - Vertical scaling: Host cluster nodes on each CPU in a high-performance compute engine with high CPUs number to eliminate the network overhead cost
