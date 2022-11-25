@@ -1,8 +1,0 @@
-[Unit]
-Description=docker
-
-[Service]
-ExecStart=/user/sbin/init_container.sh
-
-[Install]
-WantedBy=multi-user.target

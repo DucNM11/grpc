@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 # Import needed modules/functions only to optimize computing resources
-from common import to_grpc_matrix, to_matrix
+from common.common import to_grpc_matrix, to_matrix
 from numpy import matmul, array
 import asyncio
 
 # Import grpc related classes/package
 import grpc
-import service_pb2 as pb2
-import service_pb2_grpc as pb2_grpc
+import common.service_pb2 as pb2
+import common.service_pb2_grpc as pb2_grpc
 
 # Configuration options to increase matrix size a grpc message could store
 options = [('grpc.max_send_message_length', 1024**3),
@@ -35,7 +35,7 @@ async def serve():
     """Serve in asynchronous manner with non-blocking stub for optimal performance"""
     server = grpc.aio.server(options=options)
     pb2_grpc.add_CalServicer_to_server(Matrix(), server)
-    server.add_insecure_port('[::]:8888')
+    server.add_insecure_port('[::]:9999')
     await server.start()
     await server.wait_for_termination()
 

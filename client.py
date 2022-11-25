@@ -8,32 +8,22 @@ import asyncio
 
 # Import grpc related classes/package
 import grpc
-
-# Using try except to make sure this script could be called independently or through flask app (from different dir)
-try:
-    from common import to_grpc_matrix, to_matrix
-    import service_pb2 as pb2
-    import service_pb2_grpc as pb2_grpc
-except:
-    from grpc_srv.common import to_grpc_matrix, to_matrix
-    import grpc_srv.service_pb2 as pb2
-    import grpc_srv.service_pb2_grpc as pb2_grpc
+from common.common import to_grpc_matrix, to_matrix
+import common.service_pb2 as pb2
+import common.service_pb2_grpc as pb2_grpc
 
 options = [('grpc.max_send_message_length', 1024**3),
            ('grpc.max_receive_message_length', 1024**3)]
 
 # IP list of servers for client-side load-balancing
-srv_list = [
-    '35.184.147.23', '104.197.121.61', '35.188.32.59', '34.67.216.44',
-    '35.193.28.160', '104.154.201.221', '34.123.28.141', '34.67.215.11'
-]
+svr_list = ['127.0.0.1:9999', '127.0.0.1:9999', '127.0.0.1:9999', '127.0.0.1:9999', '127.0.0.1:9999', '127.0.0.1:9999', '127.0.0.1:9999', '127.0.0.1:9999']
 
 
 # ASynchronous MULtiplication request
-async def as_mul(a, b, srv=choice(srv_list)):
+async def as_mul(a, b, svr=choice(svr_list)):
     """Request multiplication operation from grpc server"""
-    print(f'multiply with srv {srv}')
-    async with grpc.aio.insecure_channel(f'{srv}:80',
+    print(f'multiply with svr {svr}')
+    async with grpc.aio.insecure_channel(svr,
                                          options=options) as channel:
         stub = pb2_grpc.CalStub(channel)
         response = await stub.mul_matrix(
@@ -44,10 +34,10 @@ async def as_mul(a, b, srv=choice(srv_list)):
 
 
 # ASynchronous ADDition request
-async def as_add(a, b, srv=choice(srv_list)):
+async def as_add(a, b, svr=choice(svr_list)):
     """Request addition operation from grpc server"""
-    print(f'add with srv {srv}')
-    async with grpc.aio.insecure_channel(f'{srv}:80',
+    print(f'add with svr {svr}')
+    async with grpc.aio.insecure_channel(svr,
                                          options=options) as channel:
         stub = pb2_grpc.CalStub(channel)
         response = await stub.add_matrix(
@@ -80,23 +70,23 @@ async def as_lb_mul(a, b, deadline):
     start = perf_counter()
 
     # Randomized the server for footprinting to assure load - balancing
-    timer = await as_mul(a00, b00, choice(srv_list))
+    timer = await as_mul(a00, b00, choice(svr_list))
 
     total_time = perf_counter() - start
 
     # 12 sub operations in total consists of 8 multiplications and 4 additions
-    total_srv = min(
-        len(srv_list),
+    total_svr = min(
+        len(svr_list),
         int((-(-total_time * 12) // deadline)) +
         1)  # // Deadline - Tenichique to round up without external package
 
     print(
-        f'Footprinting - One request takes {total_time} seconds, we will utilize {total_srv} servers for this task'
+        f'Footprinting - One request takes {total_time} seconds, we will utilize {total_svr} servers for this task'
     )
 
     params = []
     for i, param in enumerate(computation_list):
-        params.append([param[0], param[1], srv_list[i % total_srv]])
+        params.append([param[0], param[1], svr_list[i % total_svr]])
 
     # Using asynchronous call to optimmize performance
     s_call = asyncio.gather(*[as_mul(a, b, port) for (a, b, port) in params])
@@ -105,7 +95,7 @@ async def as_lb_mul(a, b, deadline):
     del params
     params = []
     for i in range(0, 8, 2):
-        params.append([rs[i], rs[i + 1], srv_list[(i // 2) % total_srv]])
+        params.append([rs[i], rs[i + 1], svr_list[(i // 2) % total_svr]])
 
     # Using asynchronous call to optimmize performance
     rs_add = asyncio.gather(*[as_add(a, b, port) for (a, b, port) in params])
@@ -120,4 +110,4 @@ async def as_lb_mul(a, b, deadline):
     rs[split:, :split] = tmp_rs[2]
     rs[split:, split:] = tmp_rs[3]
 
-    return rs
+    return {"rs" : rs, "total_svr" : total_svr}

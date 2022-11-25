@@ -1,0 +1,19 @@
+TODO:
+  x Svr container -> already have -> where
+
+  Client:
+    x Changes
+    x Container
+    x Add number of nodes activated to result return in app.py
+    x Restructure dir with inputs
+
+  ACR
+    x Import images as services
+
+  AKS Cluster
+    x Spin up a Cluster
+    x Connect to the services
+    Spin up services
+    Load-balancer
+
+  Diagram

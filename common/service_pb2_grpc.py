@@ -2,11 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-# Using try except to make sure this script could be called independently or through flask app (from different dir)
-try:
-    import service_pb2 as service__pb2
-except:
-    import grpc_srv.service_pb2 as service__pb2
+import common.service_pb2 as service__pb2
 
 
 class CalStub(object):

@@ -6,7 +6,7 @@ from numpy import array, append
 from time import perf_counter
 import asyncio
 
-from grpc_srv import client
+import client
 
 # Initiate flask app
 app = Flask(__name__)
@@ -50,7 +50,7 @@ def index_page():
 def get_matrix():
     # Get data from html form
     files = request.files.getlist('matrices[]')
-    deadline = request.form.get("deadline", 30, int)
+    deadline = request.form.get("deadline", 30, float)
     operation = request.form.get("operation")
 
     if len(files) != 2:
@@ -80,18 +80,28 @@ def get_matrix():
 
     if operation == 'add':
         rs = asyncio.run(client.as_add(matrix_1, matrix_2))
-    else:
-        rs = asyncio.run(client.as_lb_mul(matrix_1, matrix_2, deadline))
+
+        total_time = perf_counter() - time
+        print(f'Operation takes {total_time} seconds')
+
+        return jsonify(success = err == 0,
+                    operation = operation,
+                    deadline = deadline,
+                    total_svr = 1,
+                    runtime = total_time,
+                    result = rs.tolist())
+
+    rs = asyncio.run(client.as_lb_mul(matrix_1, matrix_2, deadline))
 
     total_time = perf_counter() - time
     print(f'Operation takes {total_time} seconds')
 
-    return jsonify(success=err == 0,
-                   operation=operation,
-                   deadline=deadline,
-                   runtime=total_time,
-                   result=rs.tolist())
-
+    return jsonify(success = err == 0,
+                operation = operation,
+                deadline = deadline,
+                total_svr = rs['total_svr'],
+                runtime = total_time,
+                result = rs['rs'].tolist())
 
 if __name__ == '__main__':
     app.run(debug=True)

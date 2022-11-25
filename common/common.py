@@ -1,10 +1,6 @@
 from numpy import array
 
-# Using try except to make sure this script could be called independently or through flask app (from different dir)
-try:
-    import service_pb2 as pb2
-except:
-    import grpc_srv.service_pb2 as pb2
+import common.service_pb2 as pb2
 
 
 def to_grpc_matrix(matrix):
