@@ -6,8 +6,8 @@
 - Auto Scaling up to eight worker nodes by estimating workload by the input deadline
 - Matrix multiplication algorithm: Non-recursive divide-and-conquer (optimal packet size for matrix 2^13 x 2^13 or smaller)
 
-### Future works for better scalability:
-- Matrix multiplication algorithm: Dynamic recursion layers for optimal packet size communication to improve multiplication performance
+### Future works for better multiplication performance:
+- Matrix multiplication algorithm: Dynamic number of recursion layers for optimal packet size between client - server.
 - Infrastructure:
-    - Horizontal scaling: Create a cluster within a GCP zone for better bandwidth
-    - Vertical scaling: Host cluster nodes on each CPU in a high-performance compute engine with high CPUs number to eliminate the network overhead cost
+    - Horizontal scaling: Scale up the number of replicas on the back-end.
+    - Vertical scaling: Host cluster nodes on each CPU in a high-performance compute engine with high CPUs number to eliminate the network overhead cost.
