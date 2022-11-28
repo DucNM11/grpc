@@ -2,7 +2,7 @@
 
 ### Project specs:
 - A cloud-based Azure web application using Flask connected to a distributed backend using AKS for reliability and load-balancing
-![Diagram drawio (1)](https://user-images.githubusercontent.com/14797495/204392742-b174ad89-054f-44da-8931-b435864a966a.png)
+![Diagram drawio (2)](https://user-images.githubusercontent.com/14797495/204393135-e0931eda-8b2d-48d9-86cb-b8392830044d.png)
 - Auto Scaling up to eight worker nodes by estimating workload by the input deadline
 - Matrix multiplication algorithm: Non-recursive divide-and-conquer (optimal packet size for matrix 2^13 x 2^13 or smaller)
 
