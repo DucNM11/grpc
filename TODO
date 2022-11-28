@@ -13,7 +13,15 @@ TODO:
   AKS Cluster
     x Spin up a Cluster
     x Connect to the services
-    Spin up services
+    x Spin up services
+    Connecting services
     Load-balancer
 
-  Diagram
+  Terraform
+    AKS provider
+    Remote state file
+
+  CI/CD
+    Azure CI/CD
+
+  x Diagram

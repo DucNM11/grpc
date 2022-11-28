@@ -12,6 +12,9 @@ resource "azurerm_role_assignment" "matrix_acr_assignment" {
     scope                = "${azurerm_container_registry.acr.id}"
     role_definition_name = "Contributor"
     principal_id         = "${azuread_service_principal.matrix_sp.object_id}"
+    depends_on = [
+        azuread_service_principal_password.matrix_sp_pass
+    ]
 }
 
 resource "null_resource" "docker_push_svr" {
@@ -22,6 +25,9 @@ resource "null_resource" "docker_push_svr" {
         docker push ${azurerm_container_registry.acr.login_server}/${var.docker_svr}
     EOT
     }
+    depends_on = [
+        azurerm_role_assignment.matrix_acr_assignment
+    ]
 }
 
 resource "null_resource" "docker_push_cli" {
@@ -32,4 +38,7 @@ resource "null_resource" "docker_push_cli" {
         docker push ${azurerm_container_registry.acr.login_server}/${var.docker_cli}
     EOT
     }
+    depends_on = [
+        azurerm_role_assignment.matrix_acr_assignment
+    ]
 }
